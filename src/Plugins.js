@@ -141,7 +141,7 @@ async function racePromises(promises) {
   })
 }
 
-async function baseLoginConnect(typeUsername, typePassword, authorizeApp, postLogin, options) {
+async function baseLoginConnect(typeUsername, typePassword, authorizeApp, postLogin, preLogin, options) {
   validateOptions(options)
 
   const launchOptions = {headless: !!options.headless}
@@ -161,6 +161,10 @@ async function baseLoginConnect(typeUsername, typePassword, authorizeApp, postLo
     'Mozilla/5.0 (Windows NT 10.0 Win64 x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
   )
 
+  if (preLogin) {
+    await preLogin({page, options})
+  }
+  
   await page.goto(options.loginUrl)
   await login({page, options})
 
@@ -237,7 +241,7 @@ module.exports.GoogleSocialLogin = async function GoogleSocialLogin(options = {}
     await page.click(options.postLoginClick)
   }
 
-  return baseLoginConnect(typeUsername, typePassword, null, postLogin, options)
+  return baseLoginConnect(typeUsername, typePassword, null, postLogin, null, options)
 }
 
 module.exports.GitHubSocialLogin = async function GitHubSocialLogin(options = {}) {
@@ -262,7 +266,7 @@ module.exports.GitHubSocialLogin = async function GitHubSocialLogin(options = {}
     await page.click(options.postLoginClick)
   }
 
-  return baseLoginConnect(typeUsername, typePassword, authorizeApp, postLogin, options)
+  return baseLoginConnect(typeUsername, typePassword, authorizeApp, postLogin, null, options)
 }
 
 module.exports.MicrosoftSocialLogin = async function MicrosoftSocialLogin(options = {}) {
@@ -290,5 +294,5 @@ module.exports.MicrosoftSocialLogin = async function MicrosoftSocialLogin(option
     await page.click(options.postLoginClick)
   }
 
-  return baseLoginConnect(typeUsername, typePassword, authorizeApp, postLogin, options)
+  return baseLoginConnect(typeUsername, typePassword, authorizeApp, postLogin, null, options)
 }
